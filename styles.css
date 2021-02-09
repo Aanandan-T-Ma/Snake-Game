@@ -1,0 +1,51 @@
+:root {
+    --rows: 40;
+    --columns: 60;
+}
+body {
+    background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+}
+.title {
+    text-align: center;
+    font-size: 40px;
+    border-bottom: 1px ridge black;
+    width: 700px;
+    margin: 20px auto;
+}
+.game-container {
+    margin: auto;
+    width: 600px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 10px);
+    grid-template-rows: repeat(var(--rows), 10px);
+    border: 1px solid black;
+    background-color: aliceblue;
+}
+.cell {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.active {
+    background-color: aqua;
+}
+.food {
+    background-color: blueviolet;
+}
+.game-over {
+    text-align: center;
+    margin: 20px auto;
+    font-size: 30px;
+    display: none;
+    font-weight: bold;
+}
+main {
+    display: grid;
+    grid-template-columns: 25% auto 25%;
+}
+.score, .max-score {
+    margin: auto;
+    font-size: 50px;
+    text-align: center;
+}
