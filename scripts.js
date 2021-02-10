@@ -1,8 +1,10 @@
-var snakePositions, direction, occupied, foodPosition, maxscore, score
+var snakePositions, direction, occupied, foodPosition, maxscore, score, snakeMoveId
 const maxX = 40, maxY = 60
 
 keyMoves = (event) => {
-    if(event.key === 'ArrowUp'){
+    if(event.key === ' ' || event.key === 'Enter')
+        event.preventDefault()
+    else if(event.key === 'ArrowUp'){
         if(direction !== 'D')
             direction = 'U'
     }
@@ -18,33 +20,36 @@ keyMoves = (event) => {
         if(direction !== 'L')
             direction = 'R'
     }
-    else if(event.code === 'Space')
-        direction = 'X'
 }
 
 startGame = () => {
     document.querySelector('.startup').style.transform = 'scale(0)'
-    readyFunction()
-}
 
-gameOver = () => {
-    document.querySelector('.startup').style.transform = 'scale(1)'
-    window.removeEventListener('keydown', keyMoves)
-    document.querySelector('.game-container').innerHTML = ''
-    document.querySelector('.content').innerHTML = 'Game Over!'
-    document.getElementById('points').innerHTML = 'Your Score: ' + score + '<br>High Score: ' + maxscore
-    document.getElementById('play-btn').innerHTML = 'Play Again'
-}
-
-function readyFunction(){
-    snakePositions = [{ x:10, y:10 }, { x:10, y:11}, { x:10, y:12}]
-    direction = 'R'
     occupied = new Array(maxX)
     maxscore = Number(localStorage.getItem('highscore')) || 0
     score = 0
 
     window.addEventListener('keydown', keyMoves)
+    
+    drawGrid()
+    drawSnake()
+    placeFood()
+    updateScore()
+    snakeMoveId = setInterval(moveSnake, 100)
+}
 
+gameOver = () => {
+    document.querySelector('.content').innerHTML = 'Game Over!'
+    document.getElementById('points').innerHTML = 'Your Score: ' + score + '<br>High Score: ' + maxscore
+    document.getElementById('play-btn').innerHTML = 'Play Again'
+    document.querySelector('.startup').style.transform = 'scale(1)'
+    document.querySelector('.game-container').innerHTML = ''
+
+    window.removeEventListener('keydown', keyMoves)
+    clearInterval(snakeMoveId)
+}
+
+function drawGrid(){
     const container = document.querySelector('.game-container')
     for(let i=1;i<=maxX;i++){
         occupied[i-1] = new Array(maxY)
@@ -56,17 +61,43 @@ function readyFunction(){
             occupied[i-1][j-1] = false
         }
     }
+}
+
+function drawSnake(){
+    snakePositions = []
+    let randX = Math.floor(Math.random() * maxX) + 1
+    let randY = Math.floor(Math.random() * maxY) + 1
+    if(randX <= maxX/2){
+        if(randY <= maxY/2){ 
+            direction = 'R'
+            for(let i=0;i<3;i++)
+              snakePositions.push({ x: randX, y: randY+i })
+        }
+        else{ 
+            direction = 'D'
+            for(let i=0;i<3;i++)
+              snakePositions.push({ x: randX+i, y: randY })
+        }
+    }
+    else{
+        if(randY <= maxY/2){ 
+            direction = 'U'
+            for(let i=0;i<3;i++)
+              snakePositions.push({ x: randX-i, y: randY })
+        }
+        else{ 
+            direction = 'L'
+            for(let i=0;i<3;i++)
+              snakePositions.push({ x: randX, y: randY-i })
+        }
+    }
     snakePositions.forEach((pos) => {
         document.querySelector('#cell-'+pos.x+'-'+pos.y).classList.add('active')
         occupied[pos.x-1][pos.y-1] = true
     })
-    placeFood()
-    updateScore()
-    setInterval(moveSnake, 200)
 }
 
 function moveSnake(){
-    if(direction === 'X') return
     let pos = snakePositions[snakePositions.length-1]
     let x = pos.x
     let y = pos.y
@@ -108,7 +139,7 @@ function getFoodPosition(){
         i = Math.floor(Math.random() * occupied.length)
         j = Math.floor(Math.random() * occupied[i].length)
     }
-    return { x:i+1, y:j+1 }
+    return { x: i+1, y: j+1 }
 }
 
 function updateScore(){
