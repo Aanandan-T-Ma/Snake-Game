@@ -1,17 +1,7 @@
-var snakePositions = [{ x:10, y:10 }, { x:10, y:11}, { x:10, y:12}]
-var direction = 'R'
-const maxX = 40
-const maxY = 60
-var occupied = new Array(maxX)
-var foodPosition
-var maxscore = Number(localStorage.getItem('highscore')) || 0
-var score = 0
+var snakePositions, direction, occupied, foodPosition, maxscore, score
+const maxX = 40, maxY = 60
 
-readyFunction()
-
-window.addEventListener('keydown', keyMoves)
-
-function keyMoves(event){
+keyMoves = (event) => {
     if(event.key === 'ArrowUp'){
         if(direction !== 'D')
             direction = 'U'
@@ -32,7 +22,29 @@ function keyMoves(event){
         direction = 'X'
 }
 
+startGame = () => {
+    document.querySelector('.startup').style.transform = 'scale(0)'
+    readyFunction()
+}
+
+gameOver = () => {
+    document.querySelector('.startup').style.transform = 'scale(1)'
+    window.removeEventListener('keydown', keyMoves)
+    document.querySelector('.game-container').innerHTML = ''
+    document.querySelector('.content').innerHTML = 'Game Over!'
+    document.getElementById('points').innerHTML = 'Your Score: ' + score + '<br>High Score: ' + maxscore
+    document.getElementById('play-btn').innerHTML = 'Play Again'
+}
+
 function readyFunction(){
+    snakePositions = [{ x:10, y:10 }, { x:10, y:11}, { x:10, y:12}]
+    direction = 'R'
+    occupied = new Array(maxX)
+    maxscore = Number(localStorage.getItem('highscore')) || 0
+    score = 0
+
+    window.addEventListener('keydown', keyMoves)
+
     const container = document.querySelector('.game-container')
     for(let i=1;i<=maxX;i++){
         occupied[i-1] = new Array(maxY)
@@ -69,9 +81,7 @@ function moveSnake(){
     document.querySelector('#cell-'+x+'-'+y).classList.add('active')
     snakePositions.push({x,y})
     if(occupied[x-1][y-1]){
-        window.removeEventListener('keydown', keyMoves)
-        document.querySelector('.game-over').style.display = 'block'
-        document.querySelector('.game-container').style.backgroundColor = 'black'
+        gameOver()
     }
     else if(foodPosition.x === x && foodPosition.y === y){
         document.querySelector('#cell-'+foodPosition.x+'-'+foodPosition.y).classList.remove('food')
@@ -98,7 +108,7 @@ function getFoodPosition(){
         i = Math.floor(Math.random() * occupied.length)
         j = Math.floor(Math.random() * occupied[i].length)
     }
-    return { x:i, y:j }
+    return { x:i+1, y:j+1 }
 }
 
 function updateScore(){
