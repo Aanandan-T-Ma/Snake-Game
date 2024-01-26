@@ -1,24 +1,38 @@
 var snakePositions, direction, occupied, foodPosition, maxscore, score, snakeMoveId
 const maxX = 40, maxY = 60
+var moving = false
 
 keyMoves = (event) => {
-    if(event.key === ' ' || event.key === 'Enter')
+    if(event.key === ' ' || event.key === 'Enter'){
         event.preventDefault()
-    else if(event.key === 'ArrowUp'){
-        if(direction !== 'D')
-            direction = 'U'
+        return
     }
-    else if(event.key === 'ArrowDown'){
-        if(direction !== 'U')
-            direction = 'D'
-    }
-    else if(event.key === 'ArrowLeft'){
-        if(direction !== 'R')
-            direction = 'L'
-    }
-    else if(event.key === 'ArrowRight'){
-        if(direction !== 'L')
-            direction = 'R'
+
+    if(!moving){
+        if(event.key === 'ArrowUp'){
+            if(direction !== 'D'){
+                direction = 'U'
+                moving = true
+            }
+        }
+        else if(event.key === 'ArrowDown'){
+            if(direction !== 'U'){
+                direction = 'D'
+                moving = true
+            }
+        }
+        else if(event.key === 'ArrowLeft'){
+            if(direction !== 'R'){
+                direction = 'L'
+                moving = true
+            }
+        }
+        else if(event.key === 'ArrowRight'){
+            if(direction !== 'L'){
+                direction = 'R'
+                moving = true
+            }
+        }
     }
 }
 
@@ -98,6 +112,7 @@ function drawSnake(){
 }
 
 function moveSnake(){
+    moving = false
     let pos = snakePositions[snakePositions.length-1]
     let x = pos.x
     let y = pos.y
